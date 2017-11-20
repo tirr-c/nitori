@@ -12,5 +12,5 @@ pub mod error;
 mod twitter;
 mod kaizo;
 
-pub use twitter::Twitter;
+pub use twitter::{Twitter, TweetSpec};
 pub use kaizo::Kaizo;

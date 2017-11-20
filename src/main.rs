@@ -17,12 +17,22 @@ fn main() {
     let mut core = Core::new().unwrap();
     let handle = core.handle();
 
+    let (tweet_runner, tweet_handle) = twitter.tweet(&handle);
     let stream = twitter.kaizo_stream(&handle)
-        .for_each(|kaizo| {
-            println!("{:?}", kaizo);
-            Ok(())
+        .inspect(|kaizo| println!("{:?}", kaizo))
+        .for_each(move |kaizo| {
+            let tweet = tweet_handle.clone();
+            let content = if kaizo.command.chars().count() > 50 {
+                format!("@{} Too long", kaizo.screen_name)
+            } else {
+                format!("@{} {}", kaizo.screen_name, kaizo.command)
+            };
+            let spec = nitori::TweetSpec {
+                in_reply_to: Some(kaizo.status_id),
+                text: content,
+            };
+            tweet.send(spec).map(|_| ()).map_err(|_| nitori::error::ErrorKind::Channel.into())
         });
-    let (tweet_runner, _tweet_handle) = twitter.tweet(&handle);
 
     core.run(stream.join(tweet_runner).map(|_| ())).unwrap();
 }

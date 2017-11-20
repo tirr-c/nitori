@@ -134,7 +134,10 @@ impl Twitter {
                                     if mentions.len() != 1 { None }
                                     else if mentions[0].id != bot_user_id { None }
                                     else {
-                                        Some(Ok(Kaizo))
+                                        let (until, _) = mentions[0].indices;
+                                        let command = tweet.text.chars().take(until as usize).collect::<String>();
+                                        let command = command.trim();
+                                        Some(Ok(Kaizo::new(tweet.user.screen_name.clone(), tweet.id, command)))
                                     }
                                 }
                             },
