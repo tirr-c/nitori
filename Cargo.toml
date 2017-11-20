@@ -1,0 +1,12 @@
+[package]
+authors = ["Wonwoo Choi <chwo9843@gmail.com>"]
+name = "nitori"
+version = "0.1.0"
+
+[dependencies]
+dotenv = "0.10.1"
+egg-mode = "0.11.0"
+error-chain = "0.11.0"
+futures = "0.1.17"
+tokio-core = "0.1.10"
+twitter-stream = "0.5.3"
