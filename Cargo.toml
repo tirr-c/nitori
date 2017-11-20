@@ -2,6 +2,9 @@
 authors = ["Wonwoo Choi <chwo9843@gmail.com>"]
 name = "nitori"
 version = "0.1.0"
+description = "Nitori Bot for Twitter"
+repository = "https://github.com/tirr-c/nitori.git"
+license = "AGPL-3.0"
 
 [dependencies]
 dotenv = "0.10.1"
