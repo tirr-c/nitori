@@ -74,7 +74,8 @@ impl Kaizo {
     pub fn new<S>(screen_name: S, status_id: u64, command: &str) -> Option<Self>
         where S: Into<String>
     {
-        let data = split_with_arrow(command);
+        let command = command.replace("&lt;", "<").replace("&gt;", ">").replace("&amp;", "&");
+        let data = split_with_arrow(&command);
         let (from, to) = match data {
             RequestData::One(s) => (s.to_owned(), "시공".to_owned()),
             RequestData::Two(from, to) => (from.to_owned(), to.to_owned()),
