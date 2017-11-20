@@ -87,6 +87,12 @@ impl Twitter {
                                         retry_tx
                                             .unbounded_send(draft)
                                             .map_err(|_| ErrorKind::Channel.into())
+                                    } else if err.errors.iter().any(|err| err.code == 187) {
+                                        let mut draft = draft;
+                                        draft.text.to_mut().push_str(" .");
+                                        retry_tx
+                                            .unbounded_send(draft)
+                                            .map_err(|_| ErrorKind::Channel.into())
                                     } else {
                                         Err(::egg_mode::error::Error::TwitterError(err).into())
                                     }
