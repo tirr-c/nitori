@@ -3,16 +3,11 @@ use twitter_stream::types::With;
 use twitter_stream::message;
 use futures::prelude::*;
 use tokio_core::reactor::Handle;
-use tokio_timer::{self, Timer};
 use std::time::Duration;
 
 use super::kaizo::Kaizo;
 use super::error::{Error, ErrorKind};
-
-lazy_static! {
-    static ref TIMER: Timer = tokio_timer::wheel().build();
-    static ref LONG_TIMER: Timer = tokio_timer::wheel().tick_duration(Duration::from_secs(1)).build();
-}
+use super::timer::{TIMER, LONG_TIMER};
 
 #[derive(Clone, Debug)]
 pub struct TweetSpec {
@@ -129,7 +124,10 @@ impl Twitter {
                     .filter_map(move |msg_json| {
                         let message = match message::from_str(&msg_json) {
                             Ok(x) => x,
-                            Err(x) => return Some(Err(x.into())),
+                            Err(x) => {
+                                println!("TwitterStreamMessage error: {}", x);
+                                return None;
+                            },
                         };
                         match message {
                             message::StreamMessage::Tweet(tweet) => {

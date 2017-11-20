@@ -1,3 +1,6 @@
+mod driver;
+pub use self::driver::drive;
+
 use std::str::pattern;
 // const UNICODE_ARROWS: [char; 2] = ['\u{2192}', '\u{21d2}'];
 
@@ -62,7 +65,7 @@ fn split_with_arrow(s: &str) -> RequestData {
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Hash)]
 pub struct Kaizo {
     pub screen_name: String,
     pub status_id: u64,

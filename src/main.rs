@@ -18,21 +18,31 @@ fn main() {
     let handle = core.handle();
 
     let (tweet_runner, tweet_handle) = twitter.tweet(&handle);
+    let (driver, kaizo_handle) = nitori::kaizo::drive(tweet_handle.clone());
     let stream = twitter.kaizo_stream(&handle)
         .inspect(|kaizo| println!("{:?}", kaizo))
         .for_each(move |kaizo| {
-            let tweet = tweet_handle.clone();
+            let tweet = tweet_handle.clone().sink_map_err(
+                |_| nitori::error::ErrorKind::Channel.into()
+            );
+            let kaizo_handle = kaizo_handle.clone().sink_map_err(
+                |_| nitori::error::ErrorKind::Channel.into()
+            );
+
             let content = if kaizo.from.chars().count() > 30 || kaizo.to.chars().count() > 30 {
-                format!("@{} Too long", kaizo.screen_name)
+                format!("@{} 물건 이름이 너무 길어.", kaizo.screen_name)
             } else {
-                format!("@{} {} -> {}", kaizo.screen_name, kaizo.from, kaizo.to)
+                format!("@{} '{}' -> '{}' 말이지? 알겠어!",
+                        kaizo.screen_name, kaizo.from, kaizo.to)
             };
             let spec = nitori::TweetSpec {
                 in_reply_to: Some(kaizo.status_id),
                 text: content,
             };
-            tweet.send(spec).map(|_| ()).map_err(|_| nitori::error::ErrorKind::Channel.into())
+            tweet.send(spec).and_then(|_| {
+                kaizo_handle.send(kaizo).map(|_| ())
+            })
         });
 
-    core.run(stream.join(tweet_runner).map(|_| ())).unwrap();
+    core.run(stream.join3(tweet_runner, driver).map(|_| ())).unwrap();
 }
