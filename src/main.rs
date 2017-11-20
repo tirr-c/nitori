@@ -22,10 +22,10 @@ fn main() {
         .inspect(|kaizo| println!("{:?}", kaizo))
         .for_each(move |kaizo| {
             let tweet = tweet_handle.clone();
-            let content = if kaizo.command.chars().count() > 50 {
+            let content = if kaizo.from.chars().count() > 30 || kaizo.to.chars().count() > 30 {
                 format!("@{} Too long", kaizo.screen_name)
             } else {
-                format!("@{} {}", kaizo.screen_name, kaizo.command)
+                format!("@{} {} -> {}", kaizo.screen_name, kaizo.from, kaizo.to)
             };
             let spec = nitori::TweetSpec {
                 in_reply_to: Some(kaizo.status_id),

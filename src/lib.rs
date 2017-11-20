@@ -1,4 +1,4 @@
-#![feature(conservative_impl_trait)]
+#![feature(conservative_impl_trait, pattern)]
 
 extern crate futures;
 extern crate tokio_core;

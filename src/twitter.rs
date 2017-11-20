@@ -137,7 +137,7 @@ impl Twitter {
                                         let (until, _) = mentions[0].indices;
                                         let command = tweet.text.chars().take(until as usize).collect::<String>();
                                         let command = command.trim();
-                                        Some(Ok(Kaizo::new(tweet.user.screen_name.clone(), tweet.id, command)))
+                                        Kaizo::new(tweet.user.screen_name.clone(), tweet.id, command).map(Ok)
                                     }
                                 }
                             },
